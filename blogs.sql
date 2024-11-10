@@ -13,7 +13,7 @@ create table blogs (
     ID int primary key auto_increment,
     uzivatel_id int,
     text varchar(100) not null,
-    date date default CURRENT_DATE,
+    date date,
     foreign key (uzivatel_id) references uzivatel(ID)
 );
 

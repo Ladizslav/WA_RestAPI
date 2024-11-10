@@ -115,6 +115,7 @@ export async function addAccess(id, user) {
     }
 }
 
+
 export async function removeAccess(id, user) {
     try {
         const [result] = await pool.query("DELETE FROM access WHERE blogs_id = ? AND uzivatel_id = (SELECT id FROM uzivatel WHERE username = ?)", [id, user]);

@@ -1,24 +1,9 @@
-<?php
-session_start();
-
-// Redirect to home if user is already logged in
-if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-    header('Location: index.php');
-    exit();
-}
-
-// Generate CSRF token if not set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate a secure token
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -45,11 +30,12 @@ if (empty($_SESSION['csrf_token'])) {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <?php
+                session_start();
                 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                     echo '<li class="nav-item"><a class="nav-link active" href="logout.php">Log out</a></li>';
                 } else {
                     echo '<li class="nav-item"><a class="nav-link active" href="login_page.php">Login</a></li>';
-                    echo '<li class="nav-item"><a class="nav-link active" href="register.php">Register</a></li>';
+                    echo '<li class="nav-item"><a class="nav-link active" href="register_page.php">Register</a></li>';
                 }
                 ?>
             </ul>

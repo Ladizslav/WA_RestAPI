@@ -98,20 +98,21 @@ export async function updateBlog(id, text, date) {
 
 export async function checkUser(username, password) {
     try {
-        if (!username || !password) return null;
+        if (!username || !password) return null; 
 
         const [rows] = await pool.query("SELECT password, id FROM uzivatel WHERE username = ?", [username]);
-        if (rows.length === 0) return null;
+        if (rows.length === 0) return null; 
 
         const passwordHash = rows[0].password;
         const isMatch = await bcrypt.compare(password, passwordHash);
 
-        return isMatch ? rows[0].id : null;
+        return isMatch ? rows[0].id : null; 
     } catch (error) {
         console.error('Error checking user:', error);
         return null;
     }
 }
+
 
 
 export async function createUser(username, password) {

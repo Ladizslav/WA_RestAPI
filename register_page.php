@@ -62,8 +62,6 @@
             <input type="password" id="password" name="password" class="form-control" required>
         </div>
 
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
 </div>

@@ -3,10 +3,8 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import { 
     getBlog, getBlogs, createBlog, deleteBlog, updateBlog, createUser,
-    checkUser, getBlogUser, addAccess, checkAccessUser, removeAccess,
-    isInAccess, isAdmin, isMyBlog 
+    checkUser, addAccess, removeAccess, isInAccess, isAdmin, isMyBlog 
 } from './DBC.js';
-
 
 
 const docYaml = YAML.load("./api.yaml");

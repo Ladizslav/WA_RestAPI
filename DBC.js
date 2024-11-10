@@ -160,3 +160,13 @@ export async function isMyBlog(id, user) {
         return false;
     }
 }
+export async function checkAccessUser(username) {
+    try {
+        const [rows] = await pool.query("SELECT * FROM access WHERE uzivatel_id IN (SELECT id FROM uzivatel WHERE username = ?)", [username]);
+        return rows.length > 0;
+    } catch (error) {
+        console.error('Error checking access for user:', error);
+        return false;
+    }
+}
+

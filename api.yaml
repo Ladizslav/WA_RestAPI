@@ -1,0 +1,264 @@
+openapi: 3.0.0
+info:
+  title: Blog API
+  version: 1.0.0
+  description: A simple blog API for managing blogs, users, and access control.
+servers:
+  - url: http://localhost:8080/api
+    description: Local development server
+paths:
+  /blog:
+    get:
+      summary: Retrieve blogs for a specific user
+      description: Fetch all blogs the user has access to or blogs that are public.
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: The username of the user.
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: true
+          description: The password of the user.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of blogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Blog'
+        '401':
+          description: Unauthorized - Invalid username or password
+        '404':
+          description: No blogs found or user does not exist.
+
+    post:
+      summary: Create a new blog post
+      description: Create a blog entry if the user is authenticated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Blog created successfully.
+        '400':
+          description: Bad Request - Missing or invalid fields.
+        '401':
+          description: Unauthorized - Invalid username or password.
+
+  /blog/{id}:
+    get:
+      summary: Retrieve a specific blog by ID
+      description: Fetch a blog post by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the blog.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Blog details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+        '404':
+          description: Blog not found.
+
+    delete:
+      summary: Delete a specific blog by ID
+      description: Delete a blog if the user has proper rights (admin or the creator).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the blog to delete.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Blog deleted successfully.
+        '403':
+          description: Forbidden - User doesn't have permission to delete the blog.
+        '404':
+          description: Blog not found.
+
+    patch:
+      summary: Update a specific blog by ID
+      description: Update a blog post's content if the user is authorized.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the blog to update.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Blog updated successfully.
+        '400':
+          description: Bad Request - Invalid data.
+        '403':
+          description: Forbidden - User doesn't have permission to update the blog.
+        '404':
+          description: Blog not found.
+
+  /user:
+    post:
+      summary: Create a new user
+      description: Register a new user with a username and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User created successfully.
+        '400':
+          description: Bad Request - Invalid input data.
+
+  /access/{id}:
+    post:
+      summary: Add access to a blog for another user
+      description: Allows an admin or the blog creator to add access to a blog for another user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the blog.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                adduser:
+                  type: string
+      responses:
+        '200':
+          description: Access granted successfully.
+        '403':
+          description: Forbidden - User does not have permission to add access.
+        '404':
+          description: Blog or user not found.
+
+    delete:
+      summary: Remove access from a blog for a user
+      description: Allows an admin or the blog creator to remove access from a blog for a user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the blog.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                removeuser:
+                  type: string
+      responses:
+        '200':
+          description: Access removed successfully.
+        '403':
+          description: Forbidden - User does not have permission to remove access.
+        '404':
+          description: Blog or user not found.
+
+components:
+  schemas:
+    Blog:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        date:
+          type: string
+          format: date
+      required:
+        - id
+        - text
+        - date
+
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password

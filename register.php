@@ -2,10 +2,6 @@
 require_once "./classes/DBC.php";
 session_start();
 
-if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    header('Location: register.php?error=CSRF token mismatch');
-    exit();
-}
 
 if (empty($_POST["username"]) || empty($_POST["password"])) {
     header('Location: register.php?error=Username and password are required');

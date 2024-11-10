@@ -3,10 +3,6 @@ require_once "./classes/DBC.php";
 require_once "./classes/User.php";
 session_start();
 
-if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    header('Location: threads_page.php?error=CSRF token mismatch');
-    exit();
-}
 
 if (isset($_POST['text']) && !empty($_POST['text'])) {
     $text = trim($_POST['text']);

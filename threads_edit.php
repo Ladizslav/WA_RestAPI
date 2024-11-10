@@ -2,10 +2,6 @@
 require_once "./classes/DBC.php";
 session_start();
 
-if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    header('Location: threads_page.php?error=CSRF token mismatch');
-    exit();
-}
 
 if (isset($_POST['post_id']) && isset($_POST['text_edit'])) {
     $postId = $_POST['post_id'];

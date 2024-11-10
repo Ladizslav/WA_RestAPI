@@ -1,3 +1,4 @@
+
 create database blog;
 use blog;
 
@@ -12,7 +13,7 @@ create table blogs (
     ID int primary key auto_increment,
     uzivatel_id int,
     text varchar(100) not null,
-    date date default current_date,
+    date date default CURRENT_DATE,
     foreign key (uzivatel_id) references uzivatel(ID)
 );
 
@@ -51,5 +52,3 @@ begin
     order by b.date desc;
 end //
 delimiter ;
-
-alter table uzivatel add admin bit default 0;

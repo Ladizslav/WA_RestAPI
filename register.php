@@ -1,5 +1,4 @@
 <?php
-require_once "./classes/User.php";
 require_once "./classes/DBC.php";
 session_start();
 
@@ -35,8 +34,10 @@ $query->bindParam(':username', $username, PDO::PARAM_STR);
 $query->bindParam(':password', $hash, PDO::PARAM_STR);
 $query->execute();
 
+
 $_SESSION['username'] = $username;
 $_SESSION["loggedin"] = true;
 
 header('Location: index.php');
 exit();
+?>

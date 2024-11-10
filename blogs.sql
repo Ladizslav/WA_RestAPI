@@ -1,6 +1,4 @@
-
-create database blog;
-use blog;
+use my_api_db;
 
 create table uzivatel (
     ID int primary key auto_increment,

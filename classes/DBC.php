@@ -3,9 +3,9 @@
 class DBC
 {
     public static $SERVER_IP = "localhost";
-    public static $USER = "root";
+    public static $USER = "api_user";
     public static $PASSWORD = "";
-    public static $DATABASE = "blog";
+    public static $DATABASE = "my_api_db";
 
     private static $connection = null;
 

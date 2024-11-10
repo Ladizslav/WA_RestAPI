@@ -129,7 +129,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: "Something went wrong!" });
 });
 
-app.listen(8080, '0.0.0.0', () => {
+app.listen(8080, () => {
     console.log("Server is running on port 8080");
 });
 

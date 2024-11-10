@@ -3,24 +3,40 @@ require_once "./classes/DBC.php";
 require_once "./classes/User.php";
 session_start();
 
+if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    header('Location: threads_page.php?error=CSRF token mismatch');
+    exit();
+}
+
 if (isset($_POST['text']) && !empty($_POST['text'])) {
     $text = trim($_POST['text']);
+    
+    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 
     if (isset($_SESSION["username"])) {
         $query = DBC::getConnection()->prepare("CALL addblog(:text, :username)");
         $query->bindParam(':text', $text, PDO::PARAM_STR);
         $query->bindParam(':username', $_SESSION["username"], PDO::PARAM_STR);
 
-        if ($query->execute()) {
-            header('Location: threads_page.php');
+        try {
+            if ($query->execute()) {
+                header('Location: threads_page.php?success=Post created successfully');
+                exit();
+            } else {
+                header('Location: threads_page.php?error=Error adding post');
+                exit();
+            }
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            header('Location: threads_page.php?error=Database error');
             exit();
-        } else {
-            echo "Chyba při vkládání příspěvku.";
         }
     } else {
-        echo "Prosím, přihlaste se před přidáním příspěvku.";
+        header('Location: login_page.php');
+        exit();
     }
 } else {
-    echo "Text příspěvku nemůže být prázdný.";
+    header('Location: threads_page.php?error=Text cannot be empty');
+    exit();
 }
 ?>

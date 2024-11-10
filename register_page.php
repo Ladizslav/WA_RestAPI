@@ -1,9 +1,15 @@
 <?php
 session_start();
 
+// Redirect to home if user is already logged in
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header('Location: index.php');
     exit();
+}
+
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate a secure token
 }
 ?>
 
@@ -78,9 +84,3 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
 
 </body>
 </html>
-
-<?php
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); 
-}
-?>

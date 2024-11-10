@@ -6,7 +6,6 @@ import {
     checkUser, addAccess, removeAccess, isInAccess, isAdmin, isMyBlog 
 } from './DBC.js';
 
-
 const docYaml = YAML.load("./api.yaml");
 
 const app = express();
@@ -15,7 +14,7 @@ app.use("/api/about", swaggerUi.serve, swaggerUi.setup(docYaml));
 
 app.get("/api/blog", async (req, res) => {
     let { username, password } = req.query || {};
-    if (!username || !password || await CheckUser(username, password) < 1) {
+    if (!username || !password || await checkUser(username, password) < 1) {
         const blogs = await getBlogs(null); 
         return res.status(200).json(blogs);
     } else {
@@ -35,7 +34,7 @@ app.get("/api/blog/:id", async (req, res) => {
 
 app.post("/api/blog", async (req, res) => {
     const { text, date, username, password } = req.body;
-    const userId = await CheckUser(username, password);
+    const userId = await checkUser(username, password);
     if (userId < 1) {
         return res.status(404).json({ message: "User not found" });
     }
@@ -52,7 +51,7 @@ app.delete("/api/blog/:id", async (req, res) => {
         return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (await IsAdmin(username, password) >= 1 || await IsMyBlog(id, username)) {
+    if (await isAdmin(username, password) >= 1 || await isMyBlog(id, username)) {
         await deleteBlog(id);
         return res.status(200).json({ message: "Blog deleted successfully" });
     } else {
@@ -69,7 +68,7 @@ app.patch("/api/blog/:id", async (req, res) => {
         return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (await IsAdmin(username, password) >= 1 || await IsMyBlog(id, username)) {
+    if (await isAdmin(username, password) >= 1 || await isMyBlog(id, username)) {
         await updateBlog(id, text, date);
         return res.status(200).json({ message: "Blog updated successfully" });
     } else {
@@ -92,12 +91,12 @@ app.post("/api/access/:id", async (req, res) => {
         return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (!await CheckAccessUser(adduser)) {
+    if (!await isInAccess(adduser)) {
         return res.status(404).json({ message: "User does not exist" });
     }
 
-    if (await IsAdmin(username, password) >= 1 || await IsMyBlog(blogId, username)) {
-        await AddAccess(blogId, adduser);
+    if (await isAdmin(username, password) >= 1 || await isMyBlog(blogId, username)) {
+        await addAccess(blogId, adduser);
         return res.status(200).json({ message: "Access added successfully" });
     } else {
         return res.status(403).json({ message: "Not allowed to add access to this blog" });
@@ -113,12 +112,12 @@ app.delete("/api/access/:id", async (req, res) => {
         return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (!await IsInAccess(removeuser)) {
+    if (!await isInAccess(removeuser)) {
         return res.status(404).json({ message: "User does not have access to this blog" });
     }
 
-    if (await IsAdmin(username, password) >= 1 || await IsMyBlog(blogId, username)) {
-        await RemoveAccess(blogId, removeuser);
+    if (await isAdmin(username, password) >= 1 || await isMyBlog(blogId, username)) {
+        await removeAccess(blogId, removeuser);
         return res.status(200).json({ message: "Access removed successfully" });
     } else {
         return res.status(403).json({ message: "Not allowed to remove access to this blog" });

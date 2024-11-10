@@ -13,18 +13,32 @@ const pool = mysql.createPool({
 
 export async function getBlogs(username) {
     try {
+        let query;
+        let params;
+
         if (username) {
-            const [rows] = await pool.query("CALL viewblogs(?)", [username]);
-            return rows[0] || [];
+            query = "CALL viewblogs(?)";
+            params = [username];
         } else {
-            const [rows] = await pool.query("SELECT * FROM blogs AS b WHERE b.id NOT IN (SELECT blogs_id FROM access)");
-            return rows;
+            const limit = 10; 
+            const offset = 0;
+
+            query = `
+                SELECT * FROM blogs AS b 
+                WHERE b.id NOT IN (SELECT blogs_id FROM access)
+                LIMIT ? OFFSET ?
+            `;
+            params = [limit, offset];
         }
+
+        const [rows] = await pool.query(query, params);
+        return rows[0] || [];
     } catch (error) {
         console.error('Error fetching blogs:', error);
         return [];
     }
 }
+
 
 export async function getBlog(id) {
     try {
@@ -38,6 +52,10 @@ export async function getBlog(id) {
 
 export async function createBlog(id, text, date) {
     try {
+        if (date && !/^(\d{4})-(\d{2})-(\d{2})$/.test(date)) {
+            throw new Error("Invalid date format. Expected YYYY-MM-DD.");
+        }
+
         let result;
         if (date) {
             [result] = await pool.query("INSERT INTO blogs (uzivatel_id, text, date) VALUES (?, ?, ?)", [id, text, date]);
@@ -50,6 +68,7 @@ export async function createBlog(id, text, date) {
         throw error;
     }
 }
+
 
 export async function deleteBlog(id) {
     try {
@@ -94,6 +113,7 @@ export async function checkUser(username, password) {
     }
 }
 
+
 export async function createUser(username, password) {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
@@ -107,6 +127,11 @@ export async function createUser(username, password) {
 
 export async function addAccess(id, user) {
     try {
+        const [userRow] = await pool.query("SELECT id FROM uzivatel WHERE username = ?", [user]);
+        if (userRow.length === 0) {
+            throw new Error("User does not exist.");
+        }
+
         const [result] = await pool.query("CALL addaccess (?, ?)", [id, user]);
         return result;
     } catch (error) {
@@ -114,6 +139,7 @@ export async function addAccess(id, user) {
         throw error;
     }
 }
+
 
 
 export async function removeAccess(id, user) {
@@ -150,6 +176,7 @@ export async function isAdmin(user, password) {
         return null;
     }
 }
+
 
 export async function isMyBlog(id, user) {
     try {

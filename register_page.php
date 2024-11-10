@@ -44,7 +44,7 @@
 </nav>
 
 <div class="container mt-5">
-    <h2>Register</h2>
+    <h2>Registerer</h2>
     <?php
     if (isset($_GET['error'])) {
         echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($_GET['error']) . '</div>';

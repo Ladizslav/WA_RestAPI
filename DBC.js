@@ -14,30 +14,27 @@ const pool = mysql.createPool({
 export async function getBlogs(username) {
     try {
         let query;
-        let params;
+        let params = [];
 
         if (username) {
             query = "CALL viewblogs(?)";
             params = [username];
         } else {
-            const limit = 10; 
-            const offset = 0;
-
+            
             query = `
                 SELECT * FROM blogs AS b 
                 WHERE b.id NOT IN (SELECT blogs_id FROM access)
-                LIMIT ? OFFSET ?
             `;
-            params = [limit, offset];
         }
 
         const [rows] = await pool.query(query, params);
-        return rows[0] || [];
+        return rows;  
     } catch (error) {
         console.error('Error fetching blogs:', error);
         return [];
     }
 }
+
 
 
 export async function getBlog(id) {

@@ -1,12 +1,5 @@
 use my_api_db;
 
-create table uzivatel (
-    ID int primary key auto_increment,
-    username varchar(30) not null,
-    password varchar(255) not null,
-    admin bit default 0
-);
-
 create table blogs (
     ID int primary key auto_increment,
     uzivatel_id int,
@@ -14,6 +7,15 @@ create table blogs (
     date date,
     foreign key (uzivatel_id) references uzivatel(ID)
 );
+
+
+create table uzivatel (
+    ID int primary key auto_increment,
+    username varchar(30) not null,
+    password varchar(255) not null,
+    admin bit default 0
+);
+
 
 create table access (
     ID int primary key auto_increment,
